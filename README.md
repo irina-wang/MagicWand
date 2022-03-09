@@ -3,6 +3,7 @@ ME193 Educational Robotics
 
 ## Model: 
 https://studio.edgeimpulse.com/studio/85669
+edge-impulse-daemon 
 
 ## Progress log:
 - How to use the model (Arduino)
