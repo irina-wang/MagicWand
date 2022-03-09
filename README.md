@@ -14,5 +14,5 @@ https://studio.edgeimpulse.com/studio/85669
 
 ## Might want to look into 
 
-[ ] https://github.com/edgeimpulse/firmware-pi-rp2040
+* https://github.com/edgeimpulse/firmware-pi-rp2040
 
