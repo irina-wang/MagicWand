@@ -10,6 +10,9 @@ https://studio.edgeimpulse.com/studio/85669
 - Recognition Accuracy (currently at 2.5% :,( )
 
 
+
+
 ## Might want to look into 
-[] https://github.com/edgeimpulse/firmware-pi-rp2040
-[] 
+
+[ ] https://github.com/edgeimpulse/firmware-pi-rp2040
+
