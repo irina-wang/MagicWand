@@ -8,3 +8,8 @@ https://studio.edgeimpulse.com/studio/85669
 - How to use the model (Arduino)
 - How to use the uf2 file: Can’t detect the device
 - Recognition Accuracy (currently at 2.5% :,( )
+
+
+## Might want to look into 
+[] https://github.com/edgeimpulse/firmware-pi-rp2040
+[] 
