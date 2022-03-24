@@ -14,7 +14,13 @@ def read_data_from_serial(bytes_string):
 def button_released(button_pressed, prev_button_pressed):
     return button_pressed == 1 and prev_button_pressed == 0
 
+def gather_data():
+    data = []
+    
+    pass
+
 def train_new_model():
+    
     pass
 
 arduino_samp_freq_Hz = 100
