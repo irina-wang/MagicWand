@@ -43,17 +43,19 @@ def new_class(data):
         print("Oops!  Too short.  Try press longer...")
 
 # TODO check data length
-def gather_training_data(data):
+def gather_training_data(device):
     entry_np = []
-    while i < 300:
-        data = arduino.readline()
+    # entry_np = [0 for _ in range(300)]
+    while len(entry_np) < 300:
+        data = device.readline()
         if (data is not None and len(data) > 0):
+            (array, _) = read_data_from_serial(data)
             if entry_np is None:
                 entry_np = np.expand_dims(array,0)
             else:
-                entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
-        i += 1
+                entry_np = np.append(entry_np, np.expand_dims(array,0), axis=0)
         time.sleep(0.01)
+    # TODO: Do we want to verbally remind the users?
     # entry_np = np.reshape(entry_np,(-1,6))
     return entry_np
 
@@ -111,7 +113,7 @@ if __name__ == "__main__":
 
             if True:
                 newClass = []
-                testD = gather_testing_data(serial_data) # ???how to keep writing to the array?
+                testD = gather_testing_data(arduino) # ???how to keep writing to the array?
                 predict_class(testD) # keep testing
 
                 while button_status == PRESSED:
