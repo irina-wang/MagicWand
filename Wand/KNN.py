@@ -1,3 +1,6 @@
+# TODO: an additional class for no movement
+
+
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
@@ -9,9 +12,10 @@ SAMPLE_SIZE = 20
 def import_data(label,n):
     data = np.zeros((n,300,6)) # pretrained dimension
     for i in range(n):
-        f = './' + str(label) + '/data_' + str(i+1) + '_np.csv'
+        f = './new/' + str(label) + '/data_' + str(i+1) + '_np.csv'
         data[i] = np.loadtxt(f, delimiter=',')
     return data
+
 
 wave_Xs = import_data('wave', SAMPLE_SIZE)
 swipe_Xs = import_data('swipe', SAMPLE_SIZE)
@@ -29,14 +33,16 @@ trainY = np.concatenate((wave_y,swipe_y,spin_y))
 # --------------------------------------------------------------
 ## Feature Engineering 
 #     Take sd of gyro y, gyro z, accel x
-def feature_engineering(d):
-    d_prime = np.array(d).std(axis=1)
+            # train: axis = 1
+            # test:  axis = 0 
+def feature_engineering(d,a):
+    d_prime = np.array(d).std(axis=a)
     d_prime[:, 3] = d_prime[:, 3] * 100 # scale accel x
     return d_prime[:,[1,2,3]] # select gyro y, gyro z, accel x
 
-wa = feature_engineering(wave_Xs)
-sw = feature_engineering(swipe_Xs)
-sp = feature_engineering(spin_Xs) 
+wa = feature_engineering(wave_Xs,1)
+sw = feature_engineering(swipe_Xs,1)
+sp = feature_engineering(spin_Xs,1) 
 # nw = feature_engineering(new_Xs) 
 
 # Concat Xs, y
@@ -45,28 +51,29 @@ trainX = np.concatenate((wa,sw,sp))
 
 # --------------------------------------------------------------
 # Importing Testing Data
-def import_test_data(label, index):
-    data = []
-    f = './' + str(label) + '/data_' + str(index) + '_np.csv'
-    data.append(pd.read_csv(f))
-    return data
-
-# import test data 
-wave_testX = import_test_data('test', 1, 1)
-swipe_testX  = import_test_data('test', 1, 5)
-spin_testX  = import_test_data('test', 1, 8)
-
-test1 = feature_engineering(wave_testX)
-test2 = feature_engineering(wave_testX)
-test3 = feature_engineering(wave_testX)
+# test = np.loadtxt('./new/wave/data_' + str(i+1) + '_np.csv', delimiter=',')
 
 # --------------------------------------------------------------
 ## Predict
-def predict_class(model, testX):
-    return model.predict(testX)
+
+def feature_engineering_Test(d):
+    d_prime = np.array(d).std(axis=0)
+    d_prime[3] = d_prime[3] * 100 # scale accel x
+    return d_prime[[1,2,3]] # select gyro y, gyro z, accel x
+
+def predict_class(model, x):
+    d = feature_engineering_Test(x)
+    return model.predict([d]) # expected 2d array
+
 
 if __name__ == '__main__': 
     knn_clf = KNeighborsClassifier(n_neighbors=5)
     knn_clf.fit(trainX, trainY)
-    ypred = knn_clf.predict(test1)
-    print(ypred)
+    print('done')
+
+    for i in range(20):
+        test = np.loadtxt('./new/wave/data_' + str(i+1) + '_np.csv', delimiter=',')
+        print(predict_class(knn_clf, test))
+    # for i in range(60):
+    #     ypred = knn_clf.predict([trainX[i]])
+    #     print(ypred)

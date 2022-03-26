@@ -1,11 +1,12 @@
 import serial 
 import numpy as np
 import time
+import test
 """
 columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
 
-PORT = '/dev/cu.usbmodem1444301'
+PORT = test.PORT
 
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')
@@ -48,12 +49,11 @@ if __name__ == "__main__":
                         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
                 time.sleep(0.01)
             print('im out, adding ---------')
-           
             k += 1
             entry_np = np.reshape(entry_np,(-1,6))
             print(entry_np.shape)
 
-            np.savetxt('./new/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
+            np.savetxt('./new/spin/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
         
             # print("button pressed = " + str(button_pressed))
         # if button_released(button_pressed, prev_button_pressed):
