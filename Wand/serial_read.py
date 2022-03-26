@@ -5,10 +5,14 @@ import time
 from playsound import playsound
 import KNN
 from sklearn.neighbors import KNeighborsClassifier
-import data_collection
+import _constants as my
+"""
+columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
+"""
+
+PORT = my.PORT
 
 # pretrained model
-PORT = '/dev/cu.usbmodem1444301'
 X = KNN.trainX
 Y = KNN.trainY
 knn_clf = KNeighborsClassifier(n_neighbors=5)
@@ -18,7 +22,6 @@ testD = None # length 300 data ????
 
 TRAINING = 'Sound/training_effect.wav'
 FINISHED_TRAINING = 'Sound/finished_training.wav'
-
 
  # 1 is not pressed, 0 is pressed
 PRESSED = 0
