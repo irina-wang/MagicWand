@@ -1,7 +1,6 @@
 from wsgiref.validate import ErrorWrapper
 import serial 
 import numpy as np
-import csv
 import time
 from playsound import playsound
 import KNN
@@ -21,8 +20,10 @@ testD = np.zeros(300) # length 300 data ????
 TRAINING = 'Sound/training_effect.wav'
 FINISHED_TRAINING = 'Sound/finished_training.wav'
 
-PRESSED = 1
-RELEASED = 0
+
+ # 1 is not pressed, 0 is pressed
+PRESSED = 0
+RELEASED = 1
 NEWCLASS = 3
 
 

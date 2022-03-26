@@ -1,10 +1,12 @@
 import serial 
 import numpy as np
-import csv
 import time
 """
 columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
+
+PORT = '/dev/cu.usbmodem1444301'
+
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')
     # print(data)
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     button_pressed = 1
     prev_button_pressed = 1
     print("hello world")
-    arduino = serial.Serial(port='/dev/cu.usbmodem1444301', baudrate=115200, timeout=timeout)
+    arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
     if True:
         k = 0
         while k < 20:
@@ -47,7 +49,6 @@ if __name__ == "__main__":
                 time.sleep(0.01)
             print('im out, adding ---------')
            
-
             k += 1
             entry_np = np.reshape(entry_np,(-1,6))
             print(entry_np.shape)

@@ -35,8 +35,6 @@ if __name__ == "__main__":
     
     arduino = serial.Serial(port='/dev/cu.usbmodem1444301', baudrate=115200, timeout=timeout)
     if True:
-        
-
         k = 0
 
         while k < 20:
@@ -62,10 +60,7 @@ if __name__ == "__main__":
             k += 1
             entry_np = np.reshape(entry_np,(-1,6))
             np.savetxt('./new/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
-
-        
             # print("button pressed = " + str(button_pressed))
-        
 
         # if button_released(button_pressed, prev_button_pressed):
         #     train_new_model()
