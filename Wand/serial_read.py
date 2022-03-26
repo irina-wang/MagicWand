@@ -1,3 +1,4 @@
+from random import randint
 from wsgiref.validate import ErrorWrapper
 import serial 
 import numpy as np
@@ -6,6 +7,10 @@ from playsound import playsound
 import KNN
 from sklearn.neighbors import KNeighborsClassifier
 import _constants as my
+
+from random import randrange
+
+
 """
 columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
@@ -42,11 +47,11 @@ def read_data_from_serial(bytes_string):
     return (array[:-1], array[-1])
 
 # get training data for new class
-def new_class(data):
-    try:
-        return gather_training_data(data)
-    except ValueError:
-        print("Oops!  Too short.  Try press longer...")
+# def new_class(data):
+#     try:
+#         return gather_training_data(data)
+#     except ValueError:
+#         print("Oops!  Too short.  Try press longer...")
 
 
 # TODO check data length
@@ -69,6 +74,14 @@ def new_class(data):
 #     return entry_np
 
 def gather_testing_data(array, entry_np):
+    if entry_np is None:
+        entry_np = np.expand_dims(array,0)
+    else:
+        entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
+        # time.sleep(0.01)
+    return entry_np
+
+def gather_training_data(array, entry_np):
     if entry_np is None:
         entry_np = np.expand_dims(array,0)
     else:
@@ -107,19 +120,21 @@ def test_loop(args):
     
 # Main
 if __name__ == "__main__":
-    button_pressed = PRESSED # 1
-    prev_button_status = PRESSED # 1
+    button_pressed = RELEASED # 1
+    prev_button_status = RELEASED # 1
 
     print("hello world")
     arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
     while True:
         serial_data = arduino.readline()
         if (serial_data is not None and len(serial_data) > 0):
-            (array, button_status) = read_data_from_serial(serial_data)
-            button_status = RELEASED
+            (array, button) = read_data_from_serial(serial_data)
+            button_status = randrange(2) # generate 0,1
+            # print(button_status)
 
             # for testing purpose 
-            prev_button_status = RELEASED
+            
+            
 
             if button_status == RELEASED and prev_button_status == RELEASED:
                 testD = gather_testing_data(array, testD) 
@@ -130,15 +145,24 @@ if __name__ == "__main__":
                     prev_button_status = RELEASED
 
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
-                model = train_model(new_class);
+                print('Training /\/\/\/\/\/\/\/\/\/\/\/\/')
+                time.sleep(3)
+                print('0' if new_class is None else len(new_class))
+
+                # model = train_model(new_class)
+                new_class = None
+                print('Now empty the list')
+                print('0' if new_class is None else len(new_class))
+                prev_button_status = RELEASED
+
+
 
             else: # button_status == PRESSED
+                print('Gathering Data ---------------------------------')
                 new_class = gather_testing_data(array, new_class) 
-                # if len(testD) == 300:
-                #     r = KNN.predict_class(model, testD)
-                #     print(r)
-                #     testD = testD[1:, :] # pop
+                
                 prev_button_status = PRESSED
+                
                 # if button_status == PRESSED:
                 #     newClass = new_class() # gather new_class
 
