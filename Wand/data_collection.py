@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
             entry_np = None
             # collect motion data for 3s
-            while (entry_np is None or len(entry_np) <= 300):
+            while (entry_np is None or len(entry_np) < 300):
                 data = arduino.readline()
                 if (data is not None and len(data) > 0):
                     # print("here")
