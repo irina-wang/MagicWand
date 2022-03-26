@@ -19,6 +19,7 @@ knn_clf = KNeighborsClassifier(n_neighbors=5)
 model =  knn_clf.fit(X, Y) 
 
 testD = None # length 300 data ????
+new_class = None
 
 TRAINING = 'Sound/training_effect.wav'
 FINISHED_TRAINING = 'Sound/finished_training.wav'
@@ -72,7 +73,7 @@ def gather_testing_data(array, entry_np):
         entry_np = np.expand_dims(array,0)
     else:
         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
-        time.sleep(0.01)
+        # time.sleep(0.01)
     return entry_np
 
 # Train New Model
@@ -95,13 +96,8 @@ def predict_class(testD):
     return model.predict(testX) 
 
 
-
 arduino_samp_freq_Hz = 100
 timeout = 1/arduino_samp_freq_Hz
-
-
-# def pop(d):
-#     return d[1:, :]
 
 def train_loop(args):
     return 
@@ -112,30 +108,43 @@ def test_loop(args):
 # Main
 if __name__ == "__main__":
     button_pressed = PRESSED # 1
-    prev_button_pressed = PRESSED # 1
+    prev_button_status = PRESSED # 1
 
     print("hello world")
     arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
     while True:
         serial_data = arduino.readline()
         if (serial_data is not None and len(serial_data) > 0):
-            (array, _) = read_data_from_serial(serial_data)
+            (array, button_status) = read_data_from_serial(serial_data)
+            button_status = RELEASED
 
-            # if True:
-                # newClass = []
-            testD = gather_testing_data(array, testD) 
-            if len(testD) == 300:
-                r = KNN.predict_class(model, testD)
-                print(r)
-                testD = testD[1:, :] # pop
-                    # (array, button_status) = read_data_from_serial(serial_data)
+            # for testing purpose 
+            prev_button_status = RELEASED
 
+            if button_status == RELEASED and prev_button_status == RELEASED:
+                testD = gather_testing_data(array, testD) 
+                if len(testD) == 50:
+                    r = KNN.predict_class(model, testD)
+                    print(r)
+                    testD = testD[1:, :] # pop
+                    prev_button_status = RELEASED
+
+            elif button_status == RELEASED and prev_button_status == PRESSED: # just released
+                model = train_model(new_class);
+
+            else: # button_status == PRESSED
+                new_class = gather_testing_data(array, new_class) 
+                # if len(testD) == 300:
+                #     r = KNN.predict_class(model, testD)
+                #     print(r)
+                #     testD = testD[1:, :] # pop
+                prev_button_status = PRESSED
                 # if button_status == PRESSED:
                 #     newClass = new_class() # gather new_class
 
 
                 # # if button_status == RELEASED:
-                # model = train_model(newClass);
+                # 
                         
     
 
