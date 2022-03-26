@@ -1,12 +1,12 @@
 import serial 
 import numpy as np
 import time
-import test
+import _constants as my
 """
 columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
 
-PORT = test.PORT
+PORT = my.PORT
 
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')
