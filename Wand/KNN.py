@@ -14,21 +14,24 @@ from sklearn.neighbors import KNeighborsClassifier
 # Importing Training Data
 SAMPLE_SIZE = 20
 
-def import_category_data(label, sample_size):
-    data = []
-    for i in range(sample_size):
+def import_data(label,n):
+    data = np.zeros((20,300,6))
+    for i in range(n):
         f = './' + str(label) + '/data_' + str(i+1) + '_np.csv'
-        data.append(pd.read_csv(f))
+        data[i] = np.loadtxt(f, delimiter=',')
     return data
 
-wave_Xs = import_category_data('wave', SAMPLE_SIZE)
-swipe_Xs = import_category_data('swipe', SAMPLE_SIZE)
-spin_Xs = import_category_data('spin', SAMPLE_SIZE)
-# new_Xs = import_category_data('spin', SAMPLE_SIZE)
+wave_Xs = import_data('wave', SAMPLE_SIZE)
+swipe_Xs = import_data('swipe', SAMPLE_SIZE)
+spin_Xs = import_data('spin', SAMPLE_SIZE)
+new_Xs = import_data('new', SAMPLE_SIZE)
 
 wave_y =  np.full(SAMPLE_SIZE, 0)
 swipe_y = np.full(SAMPLE_SIZE, 1)
 spin_y = np.full(SAMPLE_SIZE, 2)
+new_y = np.full(SAMPLE_SIZE, 3)
+
+trainY = np.concatenate((wave_y,swipe_y,spin_y))
 
 # --------------------------------------------------------------
 # Importing Testing Data
@@ -43,28 +46,23 @@ wave_testX = import_category_data('test', 1, 1)
 swipe_testX  = import_category_data('test', 1, 5)
 spin_testX  = import_category_data('test', 1, 8)
 
+
 # --------------------------------------------------------------
 ## Feature Engineering 
-# Take sd of one feature
-def feature_engineering(d, sample_size):
+#     Take sd of gyro y, gyro z, accel x
+def feature_engineering(d):
     d_prime = np.array(d).std(axis=1)
-    return d_prime
+    d_prime[:, 3] = d_prime[:, 3] * 100 # scale accel x
+    return d_prime[:,[1,2,3]] # select gyro y, gyro z, accel x
 
-w = feature_engineering(wave_Xs, SAMPLE_SIZE)
-sw = feature_engineering(swipe_Xs, SAMPLE_SIZE)
-sp = feature_engineering(spin_Xs, SAMPLE_SIZE) 
+# n = feature_engineering(new_Xs) 
 
+w = feature_engineering(wave_Xs)
+sw = feature_engineering(swipe_Xs)
+sp = feature_engineering(spin_Xs) 
 
 # Concat Xs, y
-t = np.append(w, sw)
-Xs = np.append(t, sp).reshape(60, 6)
-
-t = np.append(wave_y, swipe_y)
-y = np.append(t, spin_y)
-
-# select gyro y, gyro z, accel x
-Xs_ = Xs[:,[1,2,3]]
-Xs_[:, 2] = Xs_[:, 2] * 100 # scale accel x
+trainX = np.concatenate((w,sw,sp))
 
 # --------------------------------------------------------------
 ## Feature Engineering 
