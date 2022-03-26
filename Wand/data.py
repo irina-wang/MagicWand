@@ -42,7 +42,6 @@ if __name__ == "__main__":
         while k < 20:
             print('Collecting the ' + str(k) + 'th Data -------------')
             time.sleep(1)
-            entry = []
             entry_np = None
             # collect  300 data points for motion data
             while (entry_np is None or len(entry_np) <= 300):
@@ -50,7 +49,7 @@ if __name__ == "__main__":
                 if (data is not None and len(data) > 0):
                     prev_button_pressed = button_pressed
                     (array, button_pressed) = read_data_from_serial(data)
-                    entry.append(array)
+     
                     if entry_np is None:
                         entry_np = np.expand_dims(array,0)
                     else:
@@ -60,10 +59,8 @@ if __name__ == "__main__":
                 time.sleep(0.01)
             print('im out, adding ---------')
            
-
             k += 1
             entry_np = np.reshape(entry_np,(-1,6))
-            
             np.savetxt('./new/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
 
         
