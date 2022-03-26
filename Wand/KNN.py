@@ -47,10 +47,7 @@ spin_testX  = import_category_data('test', 1, 8)
 ## Feature Engineering 
 # Take sd of one feature
 def feature_engineering(d, sample_size):
-
-    d_prime = np.full((sample_size,3), 0, float)
-    for i in range(sample_size):
-         d_prime[i] = np.std(d[i]).to_numpy()
+    d_prime = np.array(d).std(axis=1)
     return d_prime
 
 w = feature_engineering(wave_Xs, SAMPLE_SIZE)
