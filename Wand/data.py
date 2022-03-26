@@ -1,3 +1,4 @@
+# from types import NoneType
 import serial 
 import numpy as np
 import csv
@@ -30,22 +31,21 @@ if __name__ == "__main__":
     button_pressed = 1
     prev_button_pressed = 1
     print("hello world")
-    arduino = serial.Serial(port='/dev/tty.usbmodem142101', baudrate=115200, timeout=timeout)
+
+    
+    arduino = serial.Serial(port='/dev/cu.usbmodem1444301', baudrate=115200, timeout=timeout)
     if True:
         
-        f = open('data.csv', 'w')
-        writer = csv.writer(f)
 
         k = 0
 
         while k < 20:
             print('Collecting the ' + str(k) + 'th Data -------------')
-            time.sleep(3)
-            i = 0
+            time.sleep(1)
             entry = []
             entry_np = None
-            # collect motion data for 3s
-            while i < 300:
+            # collect  300 data points for motion data
+            while (entry_np is None or len(entry_np) <= 300):
                 data = arduino.readline()
                 if (data is not None and len(data) > 0):
                     prev_button_pressed = button_pressed
@@ -55,18 +55,17 @@ if __name__ == "__main__":
                         entry_np = np.expand_dims(array,0)
                     else:
                         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
-                    
-                i += 1
+                        print(len(entry_np))
+
                 time.sleep(0.01)
             print('im out, adding ---------')
-            # print(entry)
-            writer.writerow(entry)
+           
 
             k += 1
             entry_np = np.reshape(entry_np,(-1,6))
-            print(entry_np.shape)
-            np.savetxt('./test/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
-        f.close()
+            
+            np.savetxt('./new/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
+
         
             # print("button pressed = " + str(button_pressed))
         
