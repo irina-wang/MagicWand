@@ -1,8 +1,5 @@
 # TODO: an additional class for no movement
-
-
 import numpy as np
-import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 
 # --------------------------------------------------------------
@@ -64,7 +61,6 @@ def feature_engineering_Test(d):
 def predict_class(model, x):
     d = feature_engineering_Test(x)
     return model.predict([d]) # expected 2d array
-
 
 if __name__ == '__main__': 
     knn_clf = KNeighborsClassifier(n_neighbors=5)

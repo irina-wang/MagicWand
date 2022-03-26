@@ -91,7 +91,7 @@ def train_model(newClass):
 
 # Predict New Class
 def predict_class(testD):
-    testX = KNN.feature_engineering_(testD,1)
+    testX = KNN.feature_engineering_Test(testD)
     return model.predict(testX) 
 
 
@@ -123,9 +123,10 @@ if __name__ == "__main__":
 
             # if True:
                 # newClass = []
-            testD = gather_testing_data(array, testD) # ???how to keep writing to the array?
+            testD = gather_testing_data(array, testD) 
             if len(testD) == 300:
-                predict_class(testD) # keep testing
+                r = KNN.predict_class(model, testD)
+                print(r)
                 testD = testD[1:, :] # pop
                     # (array, button_status) = read_data_from_serial(serial_data)
 
