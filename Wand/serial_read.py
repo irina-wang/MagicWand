@@ -24,11 +24,11 @@ Y = KNN.trainY
 knn_clf = KNeighborsClassifier(n_neighbors=5)
 model =  knn_clf.fit(X, Y) 
 
-testD = None # length 300 data ????
+testD = None # [50,6]
 new_class = None
 
-TRAINING = 'Sound/training_effect.wav'
-FINISHED_TRAINING = 'Sound/finished_training.wav'
+TRAINING = my.TRAINING
+FINISHED_TRAINING = my.FINISHED_TRAINING
 
  # 1 is not pressed, 0 is pressed
 PRESSED = 0
@@ -37,9 +37,6 @@ RELEASED = 1
 # new class
 NEWCLASS = 3
 
-"""
-columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
-"""
 
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')
@@ -52,7 +49,6 @@ def gather_data(array, entry_np):
         entry_np = np.expand_dims(array,0)
     else:
         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
-        print(entry_np.shape)
         # time.sleep(0.01)
     return entry_np
 
@@ -67,49 +63,27 @@ def slice_new_data():
 
 # Train New Model
 def train_model():
-    if (len(new_class) <= 100): # try this out
-        print("Oops!  Too short.  Try press longer...")
-
     # Train KNN model 
     print('Training /\/\/\/\/\/\/\/\/\/\/\/\/')
-    # newX = KNN.feature_engineering_Test(new_class)
-    # newY = np.full(1, NEWCLASS)
-
-#------ alternative -------
+    playsound(TRAINING) # signal start
     d,n = slice_new_data()
-    
 # process new data
-    # data = np.zeros((n,50,6))
-    # for i in range(num):
     x, n = KNN.reshape_X(d)
     newX = KNN.feature_engineering(x,1)
     newY = KNN.make_Y(n, NEWCLASS)
-    
-    # trainX = np.append(X,newX).reshape(-1,3) # treat all entries as one entry
-    # trainY = np.append(Y,newY)
 
     trainX = np.append(X,newX).reshape(-1,3)
     trainY = np.append(Y,newY)
-
     newModel = knn_clf.fit(trainX, trainY)
 
     # sound effects
-    # playsound(TRAINING) 
-    playsound(FINISHED_TRAINING)
-
-    # TODO: light effects 
+    playsound(FINISHED_TRAINING) 
+    time.sleep(1) # simulating training process
     return newModel
-
 
 arduino_samp_freq_Hz = 100
 timeout = 1/arduino_samp_freq_Hz
 
-def train_loop(args):
-    return 
-
-def test_loop(args):
-    return
-    
 # Main
 if __name__ == "__main__":
     button_pressed = RELEASED # 1
@@ -132,14 +106,16 @@ if __name__ == "__main__":
                     r = KNN.predict_class(model, testD)
                     print('predict:' + str(r))
                     testD = testD[1:, :] # pop
-                
                 prev_button_status = RELEASED
 
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
-                
+                if (len(new_class) >= 100): # try this out
+                    model = train_model()
+                    new_class = None
+                else:
+                    print("Oops!  Too short.  Try press longer...")
                 # Train 
-                model = train_model()
-                new_class = None
+                
 
                 # print('Now empty the list')
                 # print('0' if new_class is None else len(new_class))
@@ -151,8 +127,5 @@ if __name__ == "__main__":
                 
                 # print('Gathering Data ---------------------------------')
                 print('0' if new_class is None else len(new_class))
-    
-
-    
         i += 1
 
