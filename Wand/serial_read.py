@@ -20,6 +20,7 @@ PORT = my.PORT
 # pretrained model
 X = KNN.trainX
 Y = KNN.trainY
+
 knn_clf = KNeighborsClassifier(n_neighbors=5)
 model =  knn_clf.fit(X, Y) 
 
@@ -46,67 +47,58 @@ def read_data_from_serial(bytes_string):
     array = np.fromstring(data, sep=',')
     return (array[:-1], array[-1])
 
-# get training data for new class
-# def new_class(data):
-#     try:
-#         return gather_training_data(data)
-#     except ValueError:
-#         print("Oops!  Too short.  Try press longer...")
-
-
-# TODO check data length
-# def gather_training_data(device):
-#     entry_np = None
-#     # entry_np = [0 for _ in range(300)]
-
-#     while button_status == PRESSED:
-#     while entry_np is  None or len(entry_np) < 300:
-#         data = device.readline()
-#         if (data is not None and len(data) > 0):
-#             (array, button_status) = read_data_from_serial(data)
-#             if entry_np is None:
-#                 entry_np = np.expand_dims(array,0)
-#             else:
-#                 entry_np = np.append(entry_np, np.expand_dims(array,0), axis=0)
-#         time.sleep(0.01)
-#     # TODO: Do we want to verbally remind the users?
-#     # entry_np = np.reshape(entry_np,(-1,6))
-#     return entry_np
-
-def gather_testing_data(array, entry_np):
+def gather_data(array, entry_np):
     if entry_np is None:
         entry_np = np.expand_dims(array,0)
     else:
         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
+        print(entry_np.shape)
         # time.sleep(0.01)
     return entry_np
 
-def gather_training_data(array, entry_np):
-    if entry_np is None:
-        entry_np = np.expand_dims(array,0)
-    else:
-        entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
-        # time.sleep(0.01)
-    return entry_np
+
+# check new data 
+# process new data 
+def slice_new_data():
+    n = int(len(new_class)/50)
+    print(len(new_class))
+    print(n)
+    return (new_class[:n*50,:], n)
 
 # Train New Model
-def train_model(newClass):
+def train_model():
+    if (len(new_class) <= 100): # try this out
+        print("Oops!  Too short.  Try press longer...")
+
     # Train KNN model 
-    newXs = KNN.feature_engineering(newClass)
-    newY = np.array(NEWCLASS, newXs.length())
-    model = knn_clf.fit(X + newXs, Y + newY)
+    print('Training /\/\/\/\/\/\/\/\/\/\/\/\/')
+    # newX = KNN.feature_engineering_Test(new_class)
+    # newY = np.full(1, NEWCLASS)
+
+#------ alternative -------
+    d,n = slice_new_data()
+    
+# process new data
+    # data = np.zeros((n,50,6))
+    # for i in range(num):
+    x, n = KNN.reshape_X(d)
+    newX = KNN.feature_engineering(x,1)
+    newY = KNN.make_Y(n, NEWCLASS)
+    
+    # trainX = np.append(X,newX).reshape(-1,3) # treat all entries as one entry
+    # trainY = np.append(Y,newY)
+
+    trainX = np.append(X,newX).reshape(-1,3)
+    trainY = np.append(Y,newY)
+
+    newModel = knn_clf.fit(trainX, trainY)
 
     # sound effects
-    playsound(TRAINING) 
+    # playsound(TRAINING) 
     playsound(FINISHED_TRAINING)
 
     # TODO: light effects 
-    return model
-
-# Predict New Class
-def predict_class(testD):
-    testX = KNN.feature_engineering_Test(testD)
-    return model.predict(testX) 
+    return newModel
 
 
 arduino_samp_freq_Hz = 100
@@ -122,6 +114,7 @@ def test_loop(args):
 if __name__ == "__main__":
     button_pressed = RELEASED # 1
     prev_button_status = RELEASED # 1
+    i = 0
 
     print("hello world")
     arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
@@ -129,49 +122,37 @@ if __name__ == "__main__":
         serial_data = arduino.readline()
         if (serial_data is not None and len(serial_data) > 0):
             (array, button) = read_data_from_serial(serial_data)
-            button_status = randrange(2) # generate 0,1
-            # print(button_status)
-
-            # for testing purpose 
-            
-            
-
+        # for testing purpose 
+            # button_status = randrange(2) # generate 0,1
+            button_status = my.BUTTON[i]
+       
             if button_status == RELEASED and prev_button_status == RELEASED:
-                testD = gather_testing_data(array, testD) 
+                testD = gather_data(array, testD) 
                 if len(testD) == 50:
                     r = KNN.predict_class(model, testD)
-                    print(r)
+                    print('predict:' + str(r))
                     testD = testD[1:, :] # pop
-                    prev_button_status = RELEASED
-
-            elif button_status == RELEASED and prev_button_status == PRESSED: # just released
-                print('Training /\/\/\/\/\/\/\/\/\/\/\/\/')
-                time.sleep(3)
-                print('0' if new_class is None else len(new_class))
-
-                # model = train_model(new_class)
-                new_class = None
-                print('Now empty the list')
-                print('0' if new_class is None else len(new_class))
+                
                 prev_button_status = RELEASED
 
+            elif button_status == RELEASED and prev_button_status == PRESSED: # just released
+                
+                # Train 
+                model = train_model()
+                new_class = None
 
+                # print('Now empty the list')
+                # print('0' if new_class is None else len(new_class))
+                prev_button_status = RELEASED
 
             else: # button_status == PRESSED
-                print('Gathering Data ---------------------------------')
-                new_class = gather_testing_data(array, new_class) 
-                
+                new_class = gather_data(array, new_class) 
                 prev_button_status = PRESSED
                 
-                # if button_status == PRESSED:
-                #     newClass = new_class() # gather new_class
-
-
-                # # if button_status == RELEASED:
-                # 
-                        
+                # print('Gathering Data ---------------------------------')
+                print('0' if new_class is None else len(new_class))
     
 
     
-    
+        i += 1
 

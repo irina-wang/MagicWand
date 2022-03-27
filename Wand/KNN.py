@@ -1,7 +1,7 @@
 # TODO: an additional class for no movement
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
-import _constants as my
+
 # --------------------------------------------------------------
 # Importing Training Data
 SAMPLE_SIZE = 20
