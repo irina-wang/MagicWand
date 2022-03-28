@@ -95,6 +95,7 @@ if __name__ == "__main__":
     while True:
         serial_data = arduino.readline()
         if (serial_data is not None and len(serial_data) > 0):
+            # BUTTON! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             (array, button) = read_data_from_serial(serial_data)
         # for testing purpose 
             # button_status = randrange(2) # generate 0,1
