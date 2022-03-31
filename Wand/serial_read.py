@@ -97,16 +97,16 @@ if __name__ == "__main__":
     
     # arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout) # write the prediction
     while True:
-        arduinoOUT.reset_input_buffer()
-
+        arduinoOUT.reset_input_buffer() 
         serial_data = arduino.readline()
+        
         if (serial_data is not None and len(serial_data) > 0):
             # BUTTON! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            (array, button) = read_data_from_serial(serial_data)
+            (array, button_status) = read_data_from_serial(serial_data)
         # for testing purpose 
             # button_status = randrange(2) # generate 0,1
-            button_status = my.BUTTON[i]
-       
+            # button_status = my.BUTTON[i] # testing code
+            print(button_status)
             if button_status == RELEASED and prev_button_status == RELEASED:
                 testD = gather_data(array, testD) 
                 if len(testD) == 50:
