@@ -107,10 +107,10 @@ button = Pin(button_pin_n, Pin.IN, Pin.PULL_UP)
 
 while(True):
     gc.collect()
-    category = get_prediction()
-    time.sleep_ms(500)
-    if button.value() == 0:
-        #   """
+    # category = get_prediction()
+    # time.sleep_ms(500)
+    """if button.value() == 0:
+     
         if category == 0:
             red_light(red_pin_n, green_pin_n, blue_pin_n)
         elif category == 1:
@@ -127,12 +127,12 @@ while(True):
             white_light(red_pin_n, green_pin_n, blue_pin_n)
 
         light_off(red_pin_n, green_pin_n, blue_pin_n)
-        #   """
+    """
     gyro = lsm.read_gyro()
     accel = lsm.read_accel()
     print(str(gyro[0])  + ',' + str(gyro[1])  + ',' + str(gyro[2])  + ',' +
           str(accel[0]) + ',' + str(accel[1]) + ',' + str(accel[2]) + ',' + str(button.value()))
-    time.sleep_ms(500)
+    time.sleep_ms(10)
 
 
 

@@ -97,7 +97,7 @@ if __name__ == "__main__":
     
     # arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout) # write the prediction
     while True:
-        arduinoOUT.reset_input_buffer() 
+        arduinoOUT.reset_input_buffer()
         serial_data = arduino.readline()
         
         if (serial_data is not None and len(serial_data) > 0):
@@ -119,6 +119,7 @@ if __name__ == "__main__":
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
                 if (len(new_class) >= 100): # try this out
                     model = train_model()
+                    # arduinoOUT.reset_input_buffer() # something like this 
                     new_class = None
                 else:
                     print("Oops!  Too short.  Try press longer...")
