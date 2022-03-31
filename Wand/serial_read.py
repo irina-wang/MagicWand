@@ -16,6 +16,7 @@ columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
 
 PORT = my.PORT
+PORT2 = my.PORTOUT
 
 # pretrained model
 X = KNN.trainX
@@ -92,7 +93,12 @@ if __name__ == "__main__":
 
     print("hello world")
     arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
+    arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout)  
+    
+    # arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout) # write the prediction
     while True:
+        arduinoOUT.reset_input_buffer()
+
         serial_data = arduino.readline()
         if (serial_data is not None and len(serial_data) > 0):
             # BUTTON! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -105,7 +111,8 @@ if __name__ == "__main__":
                 testD = gather_data(array, testD) 
                 if len(testD) == 50:
                     r = KNN.predict_class(model, testD)
-                    print('predict:' + str(r))
+                    print('predict:' + str(r[0]))
+                    arduinoOUT.write(str(r[0]).encode()) # test this
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
 
