@@ -1,77 +1,125 @@
-# Govee-API-Key : {a874519a-5251-475a-9f5b-f42a25786756} // Irina's API key
-# Content-Type : application/json
+# Govel API reference: 
+    # https://govee-public.s3.amazonaws.com/developer-docs/GoveeAPIReference.pdf
 
+import json
+from urllib import response
 import requests
+from urllib.error import HTTPError
 
-# LED Strip
-#   'device': 'E0:A1:A4:C1:38:29:53:41'
-
-myAPIkey = {'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'};
-turnOn = {'device': 'E0:A1:A4:C1:38:29:53:41',
-         'model' :'H6160',
-         'cmd': 
-            {'name': 'turn', 
-            'value': 'on'}};
-
-
-myAPIkey = {'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'};
-
-turnOn = {'device': 'E0:A1:A4:C1:38:29:53:41',
-         'model' :'H6160',
-         'cmd': 
-            {'name': 'turn', 
-            'value': 'on'}};
-
-turnOff = {'device': 'E0:A1:A4:C1:38:29:53:41',
-         'model' :'H6160',
-         'cmd': 
-            {'name': 'turn', 
-            'value': 'off'}};
-
-
-Color = {'device': 'E0:A1:A4:C1:38:29:53:41',
-         'model' :'H6160',
-         'cmd': 
-            {"name": "color",
-             "value": {
-                "r": 255,
-                "g": 255,
-                "b": 255
-            }}};
-
-
-ColorTem = {'device': 'E0:A1:A4:C1:38:29:53:41',
-            'model' :'H6160',
-            'cmd': 
-                { 
-                "name": "colorTem",
-                'value': 2000
-                }};
-
-
-
-Brightness = {'device': 'E0:A1:A4:C1:38:29:53:41',
-            'model' :'H6160',
-            'cmd': 
-                { 
-                "name": "brightness",
-                "value": 10
-                }};
-
-
-
-
+# 
 # "supportCmds":["turn","brightness","color","colorTem"]
+# =====================================
+#  Cmd = ['turn' : on/off,
+#         'color': r/g/b, 0-255,
+#         'brightness': 0-100
+#         'colorTem': depends on the app']
+#
 
 
-# When cmd.name is "brightness":
-#  the valid values are between 0 and 100, and 0 will turn off the device
-#  Type: number
+DEVICE_1 = {}; # LED Strip
+DEVICE_2 = {}; # Light bulb
 
 
-# x = requests.get('https://developer-api.govee.com/v1/devices', headers={'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'});
-# x = requests.put('https://developer-api.govee.com/v1/devices/control', headers=myAPIkey, json=turnOn);
+myAPIkey = {'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'};
+putUrl = 'https://developer-api.govee.com/v1/devices/control'
 
-x = requests.put('https://developer-api.govee.com/v1/devices/control', headers=myAPIkey, json=Brightness);
-print(x.text)
 
+def GET_info():
+    response = requests.get(
+        url='https://developer-api.govee.com/v1/devices', 
+        headers=myAPIkey
+    );
+
+    if response.ok:
+        objInfo = json.loads(response.text);
+        DEVICE_1 = objInfo['data']['devices'][0]
+        DEVICE_2 = objInfo['data']['devices'][1]
+    
+    return (DEVICE_1, DEVICE_2)
+
+
+def ok(self):
+    """Returns True if :attr:`status_code` is less than 400, False if not.
+
+    This attribute checks if the status code of the response is between
+    400 and 600 to see if there was a client error or a server error. If
+    the status code is between 200 and 400, this will return True. This
+    is **not** a check to see if the response code is ``200 OK``.
+    """
+    try:
+        self.raise_for_status()
+    except HTTPError:
+        return False
+    return True
+
+
+# light_status = ['on', 'off']
+def POST_Switch(device, light_status):
+    requests_body = {
+        'device': device['device'],
+        'model': device['model'],
+        'cmd': {
+            'name': 'turn', 
+            'value': light_status
+    }};
+
+    requests.put(putUrl, headers=myAPIkey, json=requests_body);
+
+
+# r = [0:255]
+# g = [0:255]
+# b = [0:255]
+def POST_Color(device, r, g, b):
+    requests_body = {
+        'device': device['device'],
+        'model': device['model'],
+        'cmd': {
+            "name": "color",
+             "value": {
+                "r": r,
+                "g": g,
+                "b": b
+    }}};
+
+    requests.put(putUrl, headers=myAPIkey, json=requests_body);
+   
+
+# brightness = [0:100]
+def POST_Brightness(device, brightness):
+    requests_body = {
+        'device': device['device'],
+        'model': device['model'],
+        'cmd': { 
+            "name": "brightness",
+            "value": brightness
+    }};
+
+    requests.put(putUrl, headers=myAPIkey, json=requests_body);
+
+
+
+# brightness = [0:100]
+def POST_ColorTem(device, temperature):
+    colorTemRange = device['properties']['colorTem']['range'];
+    if temperature <=  colorTemRange['min'] or temperature >=  colorTemRange['max']:
+        print('POST_ColorTem request out of range')
+        return 
+    
+    requests_body = {
+        'device': device['device'],
+        'model': device['model'],
+        'cmd': { 
+            "name": "colorTem",
+            "value": temperature
+    }};
+
+    requests.put(putUrl, headers=myAPIkey, json=requests_body);
+
+
+# function calls 
+(DEVICE_1,DEVICE_2) = GET_info();
+POST_Switch(DEVICE_1, 'on');
+# POST_turnOn(DEVICE_2, 'on');
+POST_Color(DEVICE_1, 255,3,255);
+POST_Brightness(DEVICE_1,100);
+POST_Switch(DEVICE_1, 'off');
