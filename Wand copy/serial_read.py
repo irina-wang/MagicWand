@@ -36,7 +36,6 @@ PRESSED = 0
 RELEASED = 1
 
 # new class
-# NEWCLASS = 3
 NEWCLASS = 4
 
 def read_data_from_serial(bytes_string):
@@ -115,6 +114,9 @@ if __name__ == "__main__":
                     r_prob = KNN.show_proba(model, testD)
                     print('predict prob:' + str(r_prob[0]))
                     
+                    if r_prob[0][r[0]] < 1: 
+                        print('turn off')
+       
                     arduinoOUT.write(str(r[0]).encode()) # test this
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
@@ -122,6 +124,7 @@ if __name__ == "__main__":
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
                 if (len(new_class) >= 100): # try this out
                     model = train_model()
+                    arduinoOUT.reset_input_buffer()
                     # arduinoOUT.reset_input_buffer() # something like this 
                     new_class = None
                 else:
