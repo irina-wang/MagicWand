@@ -36,8 +36,8 @@ PRESSED = 0
 RELEASED = 1
 
 # new class
-NEWCLASS = 3
-
+# NEWCLASS = 3
+NEWCLASS = 4
 
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')

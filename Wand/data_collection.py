@@ -53,7 +53,7 @@ if __name__ == "__main__":
             entry_np = np.reshape(entry_np,(-1,6))
             print(entry_np.shape)
 
-            np.savetxt('./new/spin/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
+            np.savetxt('./new/empty/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
         
             # print("button pressed = " + str(button_pressed))
         # if button_released(button_pressed, prev_button_pressed):
