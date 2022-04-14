@@ -112,6 +112,9 @@ if __name__ == "__main__":
                 if len(testD) == 50:
                     r = KNN.predict_class(model, testD)
                     print('predict:' + str(r[0]))
+                    r_prob = KNN.show_proba(model, testD)
+                    print('predict prob:' + str(r_prob[0]))
+                    
                     arduinoOUT.write(str(r[0]).encode()) # test this
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
