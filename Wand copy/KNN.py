@@ -1,4 +1,5 @@
 # TODO: an additional class for no movement
+from re import S
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -7,9 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 SAMPLE_SIZE = 20
 K = 10
 
-
 def import_data(label,n):
-    data = np.zeros((n,300,6)) # pretrained dimension
+    data = np.zeros((n,50,6)) # pretrained dimension
     for i in range(n):
         f = './new/' + str(label) + '/data_' + str(i+1) + '_np.csv'
         data[i] = np.loadtxt(f, delimiter=',')
@@ -23,17 +23,19 @@ def reshape_X(x):
 def make_Y(n, CLASS):
     return np.full(n, CLASS)
 
+empty_Xs, empty_n = import_data('empty', SAMPLE_SIZE)
 wave_Xs, wave_n = import_data('wave', SAMPLE_SIZE)
 swipe_Xs, swipe_n = import_data('swipe', SAMPLE_SIZE)
 spin_Xs, spin_n = import_data('spin', SAMPLE_SIZE)
-empty_Xs, empty_n = import_data('empty', SAMPLE_SIZE)
 
-wave_y = make_Y(wave_n, 0)
-swipe_y = make_Y(swipe_n, 1)
-spin_y = make_Y(spin_n, 2)
-empty_y = make_Y(spin_n, 3)
 
-trainY = np.concatenate((wave_y,swipe_y,spin_y,empty_y))
+empty_y = make_Y(spin_n, 0)
+wave_y = make_Y(wave_n, 1)
+swipe_y = make_Y(swipe_n, 2)
+spin_y = make_Y(spin_n, 3)
+
+
+trainY = np.concatenate((empty_y, wave_y,swipe_y,spin_y))
 # trainY = np.concatenate((wave_y,swipe_y,spin_y,new_y))
 
 # --------------------------------------------------------------
@@ -46,15 +48,13 @@ def feature_engineering(d,a):
     d_prime[:, 3] = d_prime[:, 3] * 100 # scale accel x
     return d_prime[:,[1,2,3]] # select gyro y, gyro z, accel x
 
+em = feature_engineering(empty_Xs,1) 
 wa = feature_engineering(wave_Xs,1)
 sw = feature_engineering(swipe_Xs,1)
 sp = feature_engineering(spin_Xs,1) 
-em = feature_engineering(empty_Xs,1) 
-# nw = feature_engineering(new_Xs) 
 
 # Concat Xs, y
-trainX = np.concatenate((wa,sw,sp,em))
-# trainX = np.concatenate((wa,sw,sp,nw))
+trainX = np.concatenate((em,wa,sw,sp))
 
 # --------------------------------------------------------------
 # Importing Testing Data
