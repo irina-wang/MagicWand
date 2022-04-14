@@ -1,10 +1,21 @@
-from KNN import SAMPLE_SIZE
+# from KNN import SAMPLE_SIZE
 
 # PORT! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+# ------
+#
+# Documentation: 
+#    0 - red - no movement
+#    1 - green - wave < > 
+#    2 - blue - swipe ^ v
+#    3 - purple - spin o O
+#    4 - no color - trained class
+#
+
+
 PORT = '/dev/cu.usbmodem1424101'
 PORTOUT = '/dev/cu.usbmodem1424201'
-
-
 
 TRAINING = 'Sound/training_effect.wav'
 FINISHED_TRAINING = 'Sound/finished_training.wav'
