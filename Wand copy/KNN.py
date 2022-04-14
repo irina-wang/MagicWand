@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 # --------------------------------------------------------------
 # Importing Training Data
 SAMPLE_SIZE = 20
-K = 10
+K = 30
 
 def import_data(label,n):
     data = np.zeros((n,50,6)) # pretrained dimension
