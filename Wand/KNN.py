@@ -68,6 +68,11 @@ def predict_class(model, x):
     d = feature_engineering_Test(x)
     return model.predict([d]) # expected 2d array
 
+
+def show_proba(model, x):
+    d = feature_engineering_Test(x)
+    return model.predict_proba([d]) # expected 2d array
+
 if __name__ == '__main__': 
     knn_clf = KNeighborsClassifier(n_neighbors=5)
     knn_clf.fit(trainX, trainY)
