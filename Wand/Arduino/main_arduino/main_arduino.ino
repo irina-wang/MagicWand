@@ -41,19 +41,19 @@ void loop() {
 //    Serial.print("incomingByte == '1' = ");
 //    Serial.println(incomingByte == '1');
 
-    if (incomingByte == '4' || incomingByte == '5') {
+    if (incomingByte == '0' || incomingByte == '5') {
       led_off();
       byte_mode = incomingByte;
-    } else if (incomingByte == '0') {
+    } else if (incomingByte == '1') {
        fill_red();
       byte_mode = incomingByte;
-    } else if (incomingByte == '1') {
+    } else if (incomingByte == '2') {
       fill_green();
       byte_mode = incomingByte;
-    } else if (incomingByte == '2') {
+    } else if (incomingByte == '3') {
       fill_blue();
       byte_mode = incomingByte;
-    } else if (incomingByte == '3') {
+    } else if (incomingByte == '4') {
       fill_purple();
     } if (incomingByte == 'q' ||   // q = red + green     = 1 + 2 
           incomingByte == 'w' ||   // w = red + blue      = 1 + 3 
