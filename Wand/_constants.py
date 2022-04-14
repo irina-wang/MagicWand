@@ -1,8 +1,9 @@
 from KNN import SAMPLE_SIZE
 
 # PORT! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-PORT = '/dev/cu.usbmodem1434301'
-PORTOUT = '/dev/cu.usbmodem1434101'
+PORT = '/dev/cu.usbmodem1424101'
+PORTOUT = '/dev/cu.usbmodem1424201'
+
 
 
 TRAINING = 'Sound/training_effect.wav'
