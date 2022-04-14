@@ -72,7 +72,7 @@ def train_model():
     newX = KNN.feature_engineering(x,1)
     newY = KNN.make_Y(n, NEWCLASS)
 
-    trainX = np.append(X,newX).reshape(-1,3)
+    trainX = np.append(X,newX).reshape(-1,6)
     trainY = np.append(Y,newY)
     newModel = knn_clf.fit(trainX, trainY)
 
@@ -110,12 +110,15 @@ if __name__ == "__main__":
                 testD = gather_data(array, testD) 
                 if len(testD) == 50:
                     r = KNN.predict_class(model, testD)
+                    print(r)
                     print('predict:' + str(r[0]))
                     r_prob = KNN.show_proba(model, testD)
                     print('predict prob:' + str(r_prob[0]))
                     
+                    # confused states
                     if r_prob[0][r[0]] < 1: 
-                        print('turn off')
+                        r = [5]
+                        print("I'm confused")
        
                     arduinoOUT.write(str(r[0]).encode()) # test this
                     testD = testD[1:, :] # pop

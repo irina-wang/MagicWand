@@ -46,6 +46,8 @@ trainY = np.concatenate((empty_y, wave_y,swipe_y,spin_y))
 def feature_engineering(d,a):
     d_prime = np.array(d).std(axis=a)
     d_prime[:, 3] = d_prime[:, 3] * 100 # scale accel x
+    d_prime[:, 4] = d_prime[:, 4] * 100 # scale accel x
+    d_prime[:, 5] = d_prime[:, 5] * 100 # scale accel x
     # return d_prime[:,[0,1,2,3,4,5]] # select all
     return d_prime
 
@@ -67,9 +69,11 @@ trainX = np.concatenate((em,wa,sw,sp))
 def feature_engineering_Test(d):
     d_prime = np.array(d).std(axis=0)
     d_prime[3] = d_prime[3] * 100 # scale accel x
+    d_prime[4] = d_prime[4] * 100 # scale accel x
+    d_prime[5] = d_prime[5] * 100 # scale accel x
     # return d_prime[[0,1,2,3,4,5]] # select gyro y, gyro z, accel x
     return d_prime
-    
+
 def predict_class(model, x):
     d = feature_engineering_Test(x)
     return model.predict([d]) # expected 2d array

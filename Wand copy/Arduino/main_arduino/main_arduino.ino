@@ -41,21 +41,24 @@ void loop() {
 //    Serial.print("incomingByte == '1' = ");
 //    Serial.println(incomingByte == '1');
 
-    if (incomingByte == '4' || incomingByte == '5') {
+    if (incomingByte == '0' || incomingByte == '6') {
       led_off();
       byte_mode = incomingByte;
-    } else if (incomingByte == '0') {
+    } else if (incomingByte == '1') {
        fill_red();
       byte_mode = incomingByte;
-    } else if (incomingByte == '1') {
+    } else if (incomingByte == '2') {
       fill_green();
       byte_mode = incomingByte;
-    } else if (incomingByte == '2') {
+    } else if (incomingByte == '3') {
       fill_blue();
       byte_mode = incomingByte;
-    } else if (incomingByte == '3') {
+    } else if (incomingByte == '4') {
       fill_purple();
-    } if (incomingByte == 'q' ||   // q = red + green     = 1 + 2 
+    }else if (incomingByte == '5') {
+      fill_orange();
+    } if (incomingByte == 'x' ||
+          incomingByte == 'q' ||   // q = red + green     = 1 + 2 
           incomingByte == 'w' ||   // w = red + blue      = 1 + 3 
           incomingByte == 'e' ||   // e = green + blue    = 2 + 3 
           incomingByte == 'r' ||   // r = red + purple    = 1 + 4
@@ -111,7 +114,12 @@ void loop() {
     
 
   } 
-  if (byte_mode == 'q') { // 1 + 2 = red + green
+
+
+  
+  if (byte_mode == 'x') { // 1 + 2 = red + green
+      fill_rainbow();
+  } else if (byte_mode == 'q') { // 1 + 2 = red + green
       int rand_n = random(2);
 //      Serial.println(rand_n);
       if (rand_n == 0) {
