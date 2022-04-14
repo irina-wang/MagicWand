@@ -17,9 +17,6 @@ def read_data_from_serial(bytes_string):
 def button_released(button_pressed, prev_button_pressed):
     return button_pressed == 1 and prev_button_pressed == 0
 
-def train_new_model():
-    pass
-
 arduino_samp_freq_Hz = 100
 timeout = 1/arduino_samp_freq_Hz
 
@@ -53,7 +50,7 @@ if __name__ == "__main__":
             entry_np = np.reshape(entry_np,(-1,6))
             print(entry_np.shape)
 
-            np.savetxt('./new/empty/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
+            np.savetxt('./new/spin/data_'+str(k)+'_np.csv', entry_np, delimiter=',')
         
             # print("button pressed = " + str(button_pressed))
         # if button_released(button_pressed, prev_button_pressed):
