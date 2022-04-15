@@ -8,6 +8,7 @@ import KNN
 from sklearn.neighbors import KNeighborsClassifier
 import _constants as my
 
+import govee
 from random import randrange
 
 
@@ -18,9 +19,16 @@ columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 PORT = my.PORT
 PORT2 = my.PORTOUT
 
+
 # pretrained model
 X = KNN.trainX
 Y = KNN.trainY
+
+(DEVICE_1,DEVICE_2) = govee.GET_info();
+print(DEVICE_1)
+govee.POST_Switch(DEVICE_1, 'on');
+
+count = 0
 
 knn_clf = KNeighborsClassifier(n_neighbors=5)
 model =  knn_clf.fit(X, Y) 
@@ -108,19 +116,29 @@ if __name__ == "__main__":
             print(button_status)
             if button_status == RELEASED and prev_button_status == RELEASED:
                 testD = gather_data(array, testD) 
+                count = count + 1
                 if len(testD) == 50:
                     r = KNN.predict_class(model, testD)
                     print(r)
                     print('predict:' + str(r[0]))
                     r_prob = KNN.show_proba(model, testD)
                     print('predict prob:' + str(r_prob[0]))
+                    govee_brightness = r_prob[0][r[0]]
                     
                     # confused states
-                    if r_prob[0][r[0]] < 1: 
+                    if govee_brightness < 1: 
                         r = [5]
                         print("I'm confused")
-       
+                    
                     arduinoOUT.write(str(r[0]).encode()) # test this
+                    #  govee
+
+                    # print(count)
+                    if count == 100:
+                        print(count)
+                        govee.POST_Brightness(DEVICE_1,govee_brightness*100);
+                        count = 0
+
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
 
