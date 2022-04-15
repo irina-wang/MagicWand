@@ -1,5 +1,5 @@
 # Govel API reference: 
-    # https://govee-public.s3.amazonaws.com/developer-docs/GoveeAPIReference.pdf
+    # https://govee-public.s3.amazonaws.com/developer-docs/GoveeDeveloperAPIReference.pdf
 
 import json
 from urllib import response
@@ -20,7 +20,10 @@ DEVICE_1 = {}; # LED Strip
 DEVICE_2 = {}; # Light bulb
 
 
-myAPIkey = {'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'};
+# myAPIkey = {'Govee-API-Key': 'a874519a-5251-475a-9f5b-f42a25786756'};
+
+myAPIkey = {'Govee-API-Key': 'bd1f7b63-3a70-4528-adee-225e014d3499'};
+
 putUrl = 'https://developer-api.govee.com/v1/devices/control'
 
 
@@ -63,7 +66,7 @@ def POST_Switch(device, light_status):
             'value': light_status
     }};
 
-    requests.put(putUrl, headers=myAPIkey, json=requests_body);
+    print(requests.put(putUrl, headers=myAPIkey, json=requests_body));
 
 
 # r = [0:255]
@@ -96,8 +99,6 @@ def POST_Brightness(device, brightness):
 
     requests.put(putUrl, headers=myAPIkey, json=requests_body);
 
-
-
 # brightness = [0:100]
 def POST_ColorTem(device, temperature):
     colorTemRange = device['properties']['colorTem']['range'];
@@ -116,10 +117,13 @@ def POST_ColorTem(device, temperature):
     requests.put(putUrl, headers=myAPIkey, json=requests_body);
 
 
-# function calls 
-(DEVICE_1,DEVICE_2) = GET_info();
-POST_Switch(DEVICE_1, 'on');
-# POST_turnOn(DEVICE_2, 'on');
-POST_Color(DEVICE_1, 255,3,255);
-POST_Brightness(DEVICE_1,100);
-POST_Switch(DEVICE_1, 'off');
+if __name__ == '__main__': 
+# # function calls 
+    (DEVICE_1,DEVICE_2) = GET_info();
+    print(DEVICE_1)
+    POST_Switch(DEVICE_1, 'on');
+    # POST_turnOn(DEVICE_2, 'on');
+    # POST_Color(DEVICE_1, 255,3,255);
+    POST_Brightness(DEVICE_1,50);
+    POST_Brightness(DEVICE_1,100);
+    # POST_Switch(DEVICE_1, 'off');
