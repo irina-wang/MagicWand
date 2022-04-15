@@ -41,7 +41,7 @@ void loop() {
 //    Serial.print("incomingByte == '1' = ");
 //    Serial.println(incomingByte == '1');
 
-    if (incomingByte == '0' || incomingByte == '5') {
+    if (incomingByte == '0' || incomingByte == '6') {
       led_off();
       byte_mode = incomingByte;
     } else if (incomingByte == '1') {
@@ -55,6 +55,9 @@ void loop() {
       byte_mode = incomingByte;
     } else if (incomingByte == '4') {
       fill_purple();
+    }else if (incomingByte == '5') {
+//      fill_orange();
+      byte_mode = 'a';
     } if (incomingByte == 'q' ||   // q = red + green     = 1 + 2 
           incomingByte == 'w' ||   // w = red + blue      = 1 + 3 
           incomingByte == 'e' ||   // e = green + blue    = 2 + 3 
