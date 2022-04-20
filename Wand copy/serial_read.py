@@ -16,6 +16,7 @@ from random import randrange
 columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
 
+
 PORT = my.PORT
 PORT2 = my.PORTOUT
 
@@ -24,9 +25,6 @@ PORT2 = my.PORTOUT
 X = KNN.trainX
 Y = KNN.trainY
 
-(DEVICE_1,DEVICE_2) = govee.GET_info();
-print(DEVICE_1)
-govee.POST_Switch(DEVICE_1, 'on');
 
 count = 0
 
@@ -38,6 +36,16 @@ new_class = None
 
 TRAINING = my.TRAINING
 FINISHED_TRAINING = my.FINISHED_TRAINING
+HUH = my.HUH
+BEGIN = my.BEGIN
+playsound(BEGIN)
+
+
+
+
+# (DEVICE_1,DEVICE_2) = govee.GET_info();
+# print(DEVICE_2)
+# govee.POST_Switch(DEVICE_2, 'on');
 
  # 1 is not pressed, 0 is pressed
 PRESSED = 0
@@ -104,51 +112,63 @@ if __name__ == "__main__":
     
     # arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout) # write the prediction
     while True:
-        arduinoOUT.reset_input_buffer()
+        # arduinoOUT.reset_input_buffer()
         serial_data = arduino.readline()
+        trained = False
         
         if (serial_data is not None and len(serial_data) > 0):
-            # BUTTON! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             (array, button_status) = read_data_from_serial(serial_data)
         # for testing purpose 
             # button_status = randrange(2) # generate 0,1
             # button_status = my.BUTTON[i] # testing code
-            print(button_status)
+            print('button' + str(button_status))
             if button_status == RELEASED and prev_button_status == RELEASED:
-                testD = gather_data(array, testD) 
-                count = count + 1
-                if len(testD) == 50:
-                    r = KNN.predict_class(model, testD)
-                    print(r)
-                    print('predict:' + str(r[0]))
-                    r_prob = KNN.show_proba(model, testD)
-                    print('predict prob:' + str(r_prob[0]))
-                    govee_brightness = r_prob[0][r[0]]
-                    
-                    # confused states
-                    if govee_brightness < 1: 
-                        r = [5]
-                        print("I'm confused")
-                    
-                    arduinoOUT.write(str(r[0]).encode()) # test this
-                    #  govee
+                if (len(array) == 6):
+                    testD = gather_data(array, testD) 
+                # count = count + 1
+               
+                    if len(testD) == 50:
+                        r = KNN.predict_class(model, testD)
+                        print('predict:' + str(r[0]))
+                        r_prob = KNN.show_proba(model, testD)
+                        print('predict prob:' + str(r_prob[0]))
+                        govee_brightness = r_prob[0][r[0]]
+                        
 
-                    # print(count)
-                    if count == 100:
-                        print(count)
-                        govee.POST_Brightness(DEVICE_1,govee_brightness*100);
-                        count = 0
+                        print('govee_brightness' + str(govee_brightness))
+                        # confused states
+                        if govee_brightness < 1: 
+                            r = [5]
+                            print("I'm confused")
+                        
+                        arduinoOUT.write(str(r[0]).encode()) # test this
+                        #  govee
 
-                    testD = testD[1:, :] # pop
+                        # print(count)
+                        if trained: 
+                            print('trained')
+                            print(r_prob[0][4])
+                        # if count == 100:
+                        #     print(count)
+                        #     govee.POST_Brightness(DEVICE_2,0.5*100);
+                        #     count = 0
+
+                        testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
 
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
                 if (len(new_class) >= 100): # try this out
+                    arduinoOUT.write(str([0]).encode())
                     model = train_model()
                     arduinoOUT.reset_input_buffer()
+                    arduino.reset_output_buffer()
+                    trained = True
+                    # arduino.reset_output_buffer()
+                    # arduino.reset_input_buffer()
                     # arduinoOUT.reset_input_buffer() # something like this 
                     new_class = None
                 else:
+                    new_class = None
                     print("Oops!  Too short.  Try press longer...")
                 # Train 
                 
@@ -158,8 +178,16 @@ if __name__ == "__main__":
                 prev_button_status = RELEASED
 
             else: # button_status == PRESSED
-                new_class = gather_data(array, new_class) 
+                arduinoOUT.write(str([0]).encode())
+                if (len(array) == 6):
+                    new_class = gather_data(array, new_class) 
                 prev_button_status = PRESSED
+
+
+                arduinoOUT.reset_input_buffer()
+                arduino.reset_output_buffer()
+
+                # prev_button_status = PRESSED
                 
                 # print('Gathering Data ---------------------------------')
                 print('0' if new_class is None else len(new_class))

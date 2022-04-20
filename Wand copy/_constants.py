@@ -7,11 +7,13 @@
 #    3 - purple - spin o O
 #    4 - no color - trained class
 
-PORT = '/dev/cu.usbmodem1424101'
-PORTOUT = '/dev/cu.usbmodem1424201'
+PORT = '/dev/tty.usbmodem1444101'
+PORTOUT = '/dev/tty.usbmodem1444301'
 
 TRAINING = 'Sound/training_effect.wav'
 FINISHED_TRAINING = 'Sound/finished_training.wav'
+HUH = 'Sound/huh.wav'
+BEGIN = 'Sound/begin.wav'
 
 dim = 50 # how many data are we taking std of
 BUTTON = [1 for i in range(30000)] 

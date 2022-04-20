@@ -5,11 +5,14 @@
 
 CRGB leds[NUM_LEDS];
 
-/*
+
+
+
+
 int red_light_pin = 47;
 int green_light_pin = 48;
 int blue_light_pin = 49;
-*/
+
 // serial communication
 //String incoming; // for incoming serial data
 char incomingByte;
@@ -24,7 +27,7 @@ void setup() {
   */
   
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
-//  led_off();
+  led_off();
   fill_rainbow();
   FastLED.show();
   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
@@ -34,6 +37,7 @@ void setup() {
 void loop() {
 //  Serial.print("incomingByte = ");
 //  Serial.println(incomingByte);
+  
   if (Serial.available() > 0) {
     incomingByte = Serial.read();
 //    Serial.print("incomingByte = ");
@@ -55,8 +59,9 @@ void loop() {
       byte_mode = incomingByte;
     } else if (incomingByte == '4') {
       fill_purple();
+      byte_mode = incomingByte;
     }else if (incomingByte == '5') {
-      fill_orange();
+      incomingByte = 'q';
     } if (incomingByte == 'x' ||
           incomingByte == 'q' ||   // q = red + green     = 1 + 2 
           incomingByte == 'w' ||   // w = red + blue      = 1 + 3 
@@ -123,9 +128,11 @@ void loop() {
       int rand_n = random(2);
 //      Serial.println(rand_n);
       if (rand_n == 0) {
-        fill_red();
+//        fill_red();
+          fill_white();
       } else {
-        fill_green();
+//        fill_green();
+          fill_orange();
       }
     } else if (byte_mode == 'w') { // 1 + 3 = red + blue
       int rand_n = random(2);
@@ -172,6 +179,7 @@ void loop() {
 //      Serial.println(rand_n);
       if (rand_n == 0) {
         fill_red();
+//        fill_orange();
       } else if (rand_n == 1) {
         fill_green();
       } else {
@@ -235,6 +243,11 @@ void fill_red() {
   Serial.println("Red");
 }
 
+void fill_white() {
+  fill_solid(leds, NUM_LEDS, CRGB::White);
+  Serial.println("White");
+}
+
 void fill_green() {
   fill_solid(leds, NUM_LEDS, CRGB::Green);  
   Serial.println("Green");
@@ -255,9 +268,19 @@ void fill_orange(){
   Serial.println("Orange");
 }
 
+
 void fill_yellow() {
   fill_solid(leds, NUM_LEDS, CRGB::Yellow);  
   Serial.println("Yellow");
+}
+
+
+void fill_random(int k){
+
+  fill_solid(leds, NUM_LEDS,CRGB::Orange);  
+  Serial.println("Orange");
+   
+//  RGB_color(255,0,255); // Magenta
 }
 
 void fill_rainbow() {
