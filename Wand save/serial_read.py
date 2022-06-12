@@ -100,7 +100,6 @@ if __name__ == "__main__":
         serial_data = arduino.readline()
         
         if (serial_data is not None and len(serial_data) > 0):
-            # BUTTON! change here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             (array, button_status) = read_data_from_serial(serial_data)
         # for testing purpose 
             # button_status = randrange(2) # generate 0,1
@@ -117,7 +116,7 @@ if __name__ == "__main__":
                     if r_prob[0][r[0]] < 1: 
                         print('turn off')
        
-                    arduinoOUT.write(str(r[0]).encode()) # test this
+                    arduinoOUT.write(str(r[0]).encode())
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
 
@@ -130,17 +129,12 @@ if __name__ == "__main__":
                 else:
                     print("Oops!  Too short.  Try press longer...")
                 # Train 
-                
-
-                # print('Now empty the list')
-                # print('0' if new_class is None else len(new_class))
                 prev_button_status = RELEASED
 
             else: # button_status == PRESSED
                 new_class = gather_data(array, new_class) 
                 prev_button_status = PRESSED
                 
-                # print('Gathering Data ---------------------------------')
                 print('0' if new_class is None else len(new_class))
         i += 1
 
