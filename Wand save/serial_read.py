@@ -37,13 +37,12 @@ NEWCLASS = 4
 PRESSED = 0
 RELEASED = 1
 
-
-
 def read_data_from_serial(bytes_string):
     data = bytes_string.decode('UTF-8')
     # print(data)
     array = np.fromstring(data, sep=',')
     return (array[:-1], array[-1])
+
 
 def gather_data(array, entry_np):
     if entry_np is None:
@@ -52,16 +51,14 @@ def gather_data(array, entry_np):
         entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
     return entry_np
 
-# process new data 
 def slice_new_data():
     n = int(len(new_class)/50)
     print(len(new_class))
     print(n)
     return (new_class[:n*50,:], n)
 
-# Train New Model
 def train_model():
-    print('Training /\/\/\/\/\/\/\/\/\/\/\/\/')
+    print('/\/\/\/\/\/\/\/\/\/\/\/\/ Training /\/\/\/\/\/\/\/\/\/\/\/\/')
     playsound(TRAINING) # signal start
     d,n = slice_new_data()
 
@@ -96,9 +93,10 @@ if __name__ == "__main__":
         arduinoOUT.reset_input_buffer()
         serial_data = arduino.readline()
         
-        if (serial_data is not None and len(serial_data) > 0):
+        if (serial_data is not None and len(serial_data) > 0): 
             (array, button_status) = read_data_from_serial(serial_data)
-            print(button_status)
+
+            # Case 1: button realeased  - play mode with existing model
             if button_status == RELEASED and prev_button_status == RELEASED:
                 testD = gather_data(array, testD) 
                 if len(testD) == 50:
@@ -114,6 +112,7 @@ if __name__ == "__main__":
                     testD = testD[1:, :] # pop
                 prev_button_status = RELEASED
 
+            # Case 2: button just released - train new model
             elif button_status == RELEASED and prev_button_status == PRESSED: # just released
                 if (len(new_class) >= 100): # try this out
                     model = train_model()
@@ -124,7 +123,8 @@ if __name__ == "__main__":
                  
                 prev_button_status = RELEASED # Training
 
-            else: # button_status == PRESSED
+            # Case 3: button is pressed - gather new datas
+            else: 
                 new_class = gather_data(array, new_class) 
                 prev_button_status = PRESSED
                 
