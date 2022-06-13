@@ -11,52 +11,55 @@ import _constants as my
 
 
 """
-columns are: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
+serial data: [gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, button_pressed]
 """
 
-PORT = my.PORT
-PORT2 = my.PORTOUT
-
-TRAINING = my.TRAINING
-FINISHED_TRAINING = my.FINISHED_TRAINING
-
-# pretrained model
+# Model
 X = KNN.trainX
 Y = KNN.trainY
-
 knn_clf = KNeighborsClassifier(n_neighbors=5)
 model =  knn_clf.fit(X, Y) 
 
-testD = None # [50,6]
-new_class = None
+# New Data
+testD = None 
+trainD = None
 
-# new class
+# Constants 
 NEWCLASS = 4
-
-# button values
+MIN_ENTRY = 50 # group size 
 PRESSED = 0
 RELEASED = 1
 
-def read_data_from_serial(bytes_string):
+PORT = my.PORT
+PORT2 = my.PORTOUT
+TRAINING = my.TRAINING
+FINISHED_TRAINING = my.FINISHED_TRAINING
+
+#   Read data and return gyro data and button status tuple.
+def read_data_from_serial(bytes_string):  
     data = bytes_string.decode('UTF-8')
-    # print(data)
     array = np.fromstring(data, sep=',')
     return (array[:-1], array[-1])
 
 
-def gather_data(array, entry_np):
+#  Append new data to existing array
+def gather_data(curr_arr, entry_np):
     if entry_np is None:
-        entry_np = np.expand_dims(array,0)
+        entry_np = np.expand_dims(curr_arr,0)
     else:
-        entry_np = np.append(entry_np,np.expand_dims(array,0),axis=0)
+        entry_np = np.append(entry_np,np.expand_dims(curr_arr,0),axis=0)
     return entry_np
 
-def slice_new_data():
-    n = int(len(new_class)/50)
-    print(len(new_class))
-    print(n)
-    return (new_class[:n*50,:], n)
 
+#  Reshape the currenty data based on group size.
+def slice_new_data():
+    n = int(len(trainD)/MIN_ENTRY)
+    print(len(trainD))
+    print(n)
+    return (trainD[:n*MIN_ENTRY,:], n)
+
+
+#  Train model based on the data gathered 
 def train_model():
     print('/\/\/\/\/\/\/\/\/\/\/\/\/ Training /\/\/\/\/\/\/\/\/\/\/\/\/')
     playsound(TRAINING) # signal start
@@ -79,17 +82,21 @@ def train_model():
 arduino_samp_freq_Hz = 100
 timeout = 1/arduino_samp_freq_Hz
 
-# ---- Main ----
+
+# Main function 
 if __name__ == "__main__":
     button_pressed = RELEASED # 1
     prev_button_status = RELEASED # 1
     i = 0
 
-    print("hello world")
+    print("\/\/\ Hi, Welcome to the Magic World. /\/\/")
+    
+    # set baud rate and port, send data faster from input arduino than for output one
     arduino = serial.Serial(port=PORT, baudrate=115200, timeout=timeout)
     arduinoOUT = serial.Serial(port=PORT2, baudrate=9600, timeout=timeout)  
 
     while True:
+        # clear buffer and read data 
         arduinoOUT.reset_input_buffer()
         serial_data = arduino.readline()
         
@@ -99,35 +106,40 @@ if __name__ == "__main__":
             # Case 1: button realeased  - play mode with existing model
             if button_status == RELEASED and prev_button_status == RELEASED:
                 testD = gather_data(array, testD) 
-                if len(testD) == 50:
+                
+                # predict class if enough samples are collected 
+                if len(testD) == MIN_ENTRY:
+                    # predict class and probability with current model
                     r = KNN.predict_class(model, testD)
-                    print('predict:' + str(r[0]))
                     r_prob = KNN.show_proba(model, testD)
                     print('predict prob:' + str(r_prob[0]))
                     
-                    if r_prob[0][r[0]] < 1: 
-                        print('turn off')
-       
-                    arduinoOUT.write(str(r[0]).encode())
-                    testD = testD[1:, :] # pop
+                    arduinoOUT.write(str(r[0]).encode()) 
+                    
+                    # pop the first elem out 
+                    testD = testD[1:, :] 
+                    
                 prev_button_status = RELEASED
 
             # Case 2: button just released - train new model
-            elif button_status == RELEASED and prev_button_status == PRESSED: # just released
-                if (len(new_class) >= 100): # try this out
+            elif button_status == RELEASED and prev_button_status == PRESSED: 
+                
+                # train if enough samples were collected
+                # 2 was used to allow some buffer time, could be substitute by any number greater than 1
+                if (len(trainD) >= 2*MIN_ENTRY): 
                     model = train_model()
-                    arduinoOUT.reset_input_buffer()
-                    new_class = None
+                    
+                    # clear training data and arduino buffer data jammed while training
+                    trainD = None 
+                    arduinoOUT.reset_input_buffer() 
                 else:
                     print("Oops!  Too short.  Try press longer...")
                  
-                prev_button_status = RELEASED # Training
+                prev_button_status = RELEASED 
 
             # Case 3: button is pressed - gather new datas
             else: 
-                new_class = gather_data(array, new_class) 
+                trainD = gather_data(array, trainD) 
                 prev_button_status = PRESSED
-                
-                print('0' if new_class is None else len(new_class))
         i += 1
 
